@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # Étape 1 : récupérer le dépôt
+      - uses: actions/checkout@v4
+
+      # Étape 2 : installer Python
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      # Étape 3 : environnement virtuel et dépendances
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          . venv/bin/activate
+          pip install -r requirements.txt
+
+      # Étape 4 : linter et tests
+      - name: Run linter and tests
+        run: |
+          . venv/bin/activate
+          flake8 --exclude=venv* --statistics
+          python -m pytest -v --cov=calculator
